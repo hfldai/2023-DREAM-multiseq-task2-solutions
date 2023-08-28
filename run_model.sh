@@ -30,8 +30,8 @@ done
 # 5. rm ataworks bedGraph outputs to save space
 basename -a -s .bam $(ls $INPUT_DIR/*.bam) | parallel --max-procs=$NCORES --halt-on-error 2 \
   'samtools index $INPUT_DIR/{}.bam &&
-   bamCoverage --bam $INPUT_DIR/{}.bam -o $TMP_DIR/{}.bw -bs 1 --extendReads -p max --normalizeUsing None -v &&
-   atacworks denoise --noisybw $TMP_DIR/{}.bw --genome $GENOME_DIR/{}.genome_sizes.txt --weights_path $MODEL --out_home $DENOISE_DIR --exp_name {} --threshold $THR --distributed --num_workers 0 &&
+   bamCoverage --bam $INPUT_DIR/{}.bam -o $BW_DIR/{}.bw -bs 1 --extendReads -p max --normalizeUsing None -v &&
+   atacworks denoise --noisybw $BW_DIR/{}.bw --genome $GENOME_DIR/{}.genome_sizes.txt --weights_path $MODEL --out_home $DENOISE_DIR --exp_name {} --threshold $THR --distributed --num_workers 0 &&
    python $PROCESS_PEAKCALLS --peakbg $DENOISE_DIR/{}_latest/{}_infer.peaks.bedGraph --trackbg $DENOISE_DIR/{}_latest/{}_infer.track.bedGraph --prefix {} --out_dir $DENOISE_DIR/{}_latest --minlen 20 &&
    cat $DENOISE_DIR/{}_latest/{}.bed | tail -n +2 | cut -f 1,2,3 | sort -k1,1 -k2,2n > $OUTPUT_DIR/{}.bed &&
    rm $DENOISE_DIR/{}_latest/{}_infer.track.bedGraph $DENOISE_DIR/{}_latest/{}_infer.peaks.bedGraph'
